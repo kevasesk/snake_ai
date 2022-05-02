@@ -22,7 +22,7 @@ food = red  # red 4
 
 running = True
 gameOnline = 1
-score = 3
+score = 0
 
 cells = [
     [0 for _ in range(int(screenX/cellSize))]
@@ -74,18 +74,63 @@ def placeFood():
     global cells
     cells[random.randint(1, int(screenX/cellSize) - 2)][random.randint(1, int(screenX/cellSize) - 2)] = 4
 
+def newGame():
+    global score, cells, moveDirection, snakeHead, snakeBody, gameOnline
+    cells = [
+        [0 for _ in range(int(screenX / cellSize))]
+        for _ in range(int(screenY / cellSize))
+    ]
+    placeWalls()
+    placeFood()
+    gameOnline = 1
+    score = 0
+
+    moveDirection = 1
+    snakeHead = {
+        'x': 25,
+        'y': 15
+    }
+    snakeBody = [
+        {
+            'x': 25,
+            'y': 16
+        },
+        {
+            'x': 25,
+            'y': 17
+        },
+        {
+            'x': 25,
+            'y': 18
+        },
+    ]
+
+
 clear()
 placeWalls()
 placeFood()
+
+new_game_surface = my_font.render('New Game', True, white)
+screen.blit(new_game_surface, dest=(screenX, cellSize+200))
+
 while running:
     # render the text
-    pygame.draw.rect(screen, black, (screenX, cellSize, 150, 50), 0)
+    pygame.draw.rect(screen, black, (screenX, cellSize, 150, 200), 0)
     text_surface = my_font.render('Score: ' + str(score), True, white)
     screen.blit(text_surface, dest=(screenX, cellSize))
+
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse = pygame.mouse.get_pos()
+            print(mouse)
+            if 500 <= mouse[0] <= 700 and 200 <= mouse[1] <= 250:
+                print('new game')
+                newGame()
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 if moveDirection != 3:
@@ -146,7 +191,6 @@ while running:
 
 
         if cellBeforeMove == 1 or cellBeforeMove == 3:
-            print('game over')
             gameOnline = 0
         if cellBeforeMove == 4:
             score += 1
@@ -156,7 +200,6 @@ while running:
                 'y': newTail['y']
             })
 
-    print(score)
     if gameOnline:
         # draw cells
         for i in range(len(cells)):
