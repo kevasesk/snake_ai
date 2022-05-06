@@ -3,18 +3,18 @@ from time import sleep
 pygame.init()
 pygame.font.init()
 
-screenX = 500
-screenY = 500
+screenX = 200
+screenY = 200
 cellSize = 10
 
 
-speed = 0.2
+speed = 0.3
 
 black = (0, 0, 0)
 white = (255, 255, 255)
 red = (164, 0, 0)
 
-field = (0, 155, 0)  # green 0
+field = (0, 155, 0)  # green 5
 wall = black  # black 1
 head = (7, 127, 166)  # blue 2
 body = (87, 0, 0)  # brown 3
@@ -25,33 +25,25 @@ gameOnline = 1
 score = 0
 
 cells = [
-    [0 for _ in range(int(screenX/cellSize))]
+    [5 for _ in range(int(screenX/cellSize))]
     for _ in range(int(screenY/cellSize))
 ]
 
 moveDirection = 1
 snakeHead = {
-    'x': 25,
-    'y': 15
+    'x': int(screenX/cellSize/2),
+    'y': int(screenY/cellSize/2),
 }
 snakeBody = [
     {
-        'x': 25,
-        'y': 16
-    },
-    {
-        'x': 25,
-        'y': 17
-    },
-    {
-        'x': 25,
-        'y': 18
+        'x': int(screenX/cellSize/2),
+        'y': int(screenY/cellSize/2) + 1
     },
 ]
 
 pygame.display.set_caption('Snake AI')
-screen = pygame.display.set_mode([screenX + 200, screenY])
-my_font = pygame.font.Font(pygame.font.get_default_font(), 32)
+screen = pygame.display.set_mode([screenX + 100, screenY])
+my_font = pygame.font.Font(pygame.font.get_default_font(), 15)
 
 
 
@@ -63,7 +55,7 @@ def clear():
     global cells
     for i in range(len(cells)):
         for j in range(len(cells[i])):
-            cells[i][j] = 0
+            cells[i][j] = 5
 def placeWalls():
     global cells
     for i in range(len(cells)):
@@ -77,7 +69,7 @@ def placeFood():
 def newGame():
     global score, cells, moveDirection, snakeHead, snakeBody, gameOnline
     cells = [
-        [0 for _ in range(int(screenX / cellSize))]
+        [5 for _ in range(int(screenX / cellSize))]
         for _ in range(int(screenY / cellSize))
     ]
     placeWalls()
@@ -87,21 +79,13 @@ def newGame():
 
     moveDirection = 1
     snakeHead = {
-        'x': 25,
-        'y': 15
+        'x': int(screenX / cellSize / 2),
+        'y': int(screenY / cellSize / 2),
     }
     snakeBody = [
         {
-            'x': 25,
-            'y': 16
-        },
-        {
-            'x': 25,
-            'y': 17
-        },
-        {
-            'x': 25,
-            'y': 18
+            'x': int(screenX / cellSize / 2),
+            'y': int(screenY / cellSize / 2) + 1
         },
     ]
 
@@ -111,11 +95,11 @@ placeWalls()
 placeFood()
 
 new_game_surface = my_font.render('New Game', True, white)
-screen.blit(new_game_surface, dest=(screenX, cellSize+200))
+screen.blit(new_game_surface, dest=(screenX, cellSize+20))
 
 while running:
     # render the text
-    pygame.draw.rect(screen, black, (screenX, cellSize, 150, 200), 0)
+    pygame.draw.rect(screen, black, (screenX, cellSize, 100, 20), 0)
     text_surface = my_font.render('Score: ' + str(score), True, white)
     screen.blit(text_surface, dest=(screenX, cellSize))
 
@@ -127,7 +111,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse = pygame.mouse.get_pos()
             print(mouse)
-            if 500 <= mouse[0] <= 700 and 200 <= mouse[1] <= 250:
+            if 230 <= mouse[0] <= 260 and 20 <= mouse[1] <= 50:
                 print('new game')
                 newGame()
 
@@ -180,7 +164,7 @@ while running:
             'x': snakeBody[-1]['x'],
             'y': snakeBody[-1]['y']
         }
-        cells[snakeBody[-1]['x']][snakeBody[-1]['y']] = 0  # place field on old tail location
+        cells[snakeBody[-1]['x']][snakeBody[-1]['y']] = 5  # place field on old tail location
         snakeBody[-1]['x'] = headBeforeMove['x']  # place tail on old location of head
         snakeBody[-1]['y'] = headBeforeMove['y']  # place tail on old location of head
 
@@ -204,7 +188,7 @@ while running:
         # draw cells
         for i in range(len(cells)):
             for j in range(len(cells[i])):
-                if cells[i][j] == 0:
+                if cells[i][j] == 5:
                     drawCell(i, j, field)
                 if cells[i][j] == 1:
                     drawCell(i, j, wall)
@@ -218,7 +202,7 @@ while running:
     else:
         pygame.draw.rect(screen, field, (int(screenX/2), int(screenY/2), 150, 50), 0)
         text_surface = my_font.render('Game Over!', True, red)
-        screen.blit(text_surface, dest=(int(screenX/2) - 150 / 2 , int(screenY/2) - 50/2))
+        screen.blit(text_surface, dest=(int(screenX/2) - 50 / 2 , int(screenY/2) - 25/2))
         pygame.display.flip()
     sleep(speed)
 
