@@ -1,14 +1,17 @@
 import pygame, random, sys
 from time import sleep
+
+import brain
+
 pygame.init()
 pygame.font.init()
 
-screenX = 200
-screenY = 200
+
 cellSize = 10
+screenX = 20 * cellSize
+screenY = 20 * cellSize
 
-
-speed = 0.3
+speed = 0.01
 
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -66,6 +69,18 @@ def placeFood():
     global cells
     cells[random.randint(1, int(screenX/cellSize) - 2)][random.randint(1, int(screenX/cellSize) - 2)] = 4
 
+def getDirection(newDir, oldDir):
+    if newDir == 1 and oldDir == 3:
+        return oldDir
+    if newDir == 2 and oldDir == 4:
+        return oldDir
+    if newDir == 3 and oldDir == 1:
+        return oldDir
+    if newDir == 4 and oldDir == 2:
+        return oldDir
+    return newDir
+
+
 def newGame():
     global score, cells, moveDirection, snakeHead, snakeBody, gameOnline
     cells = [
@@ -96,14 +111,12 @@ placeFood()
 
 new_game_surface = my_font.render('New Game', True, white)
 screen.blit(new_game_surface, dest=(screenX, cellSize+20))
-
+currentBrain = None
 while running:
     # render the text
     pygame.draw.rect(screen, black, (screenX, cellSize, 100, 20), 0)
     text_surface = my_font.render('Score: ' + str(score), True, white)
     screen.blit(text_surface, dest=(screenX, cellSize))
-
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -134,6 +147,16 @@ while running:
             'x': snakeHead['x'],
             'y': snakeHead['y']
         }
+
+        # brain start
+
+        if not currentBrain:
+            currentBrain = brain.networkInit(cells, 300, 4)
+        else:
+            currentBrain = brain.networkBuild(cells, currentBrain['w1'], currentBrain['w2'])
+
+        moveDirection = getDirection(currentBrain['direction'], moveDirection)
+
 
 
         if moveDirection == 1:  # up
@@ -200,10 +223,22 @@ while running:
                     drawCell(i, j, food)
         pygame.display.flip()
     else:
-        pygame.draw.rect(screen, field, (int(screenX/2), int(screenY/2), 150, 50), 0)
-        text_surface = my_font.render('Game Over!', True, red)
-        screen.blit(text_surface, dest=(int(screenX/2) - 50 / 2 , int(screenY/2) - 25/2))
-        pygame.display.flip()
+        if score >= 1:
+            if len(brain.individuals) < brain.population:
+                brain.individuals.append({
+                    'w1': currentBrain['w1'],
+                    'w2': currentBrain['w2']
+                })
+            if len(brain.individuals) == brain.population:
+                brain.nextGeneration()
+                pass
+        currentBrain = brain.networkInit(cells, 300, 4)
+        print(len(brain.individuals))
+        newGame()
+        # pygame.draw.rect(screen, field, (int(screenX/2), int(screenY/2), 150, 50), 0)
+        # text_surface = my_font.render('Game Over!', True, red)
+        # screen.blit(text_surface, dest=(int(screenX/2) - 50 / 2 , int(screenY/2) - 25/2))
+        # pygame.display.flip()
     sleep(speed)
 
 pygame.quit()
