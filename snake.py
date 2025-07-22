@@ -34,6 +34,14 @@ class Snake:
                 return True
         return False
 
+    def check_collision_at(self, point):
+        if not (0 <= point.x < CELL_NUMBER and 0 <= point.y < CELL_NUMBER):
+            return True
+        for block in self.body[1:]:
+            if point == block:
+                return True
+        return False
+
     def reset(self):
-        self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
+        self.body = [Vector2(5, 10), Vector2(4, 10)]
         self.direction = Vector2(1, 0)
