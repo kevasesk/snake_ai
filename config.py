@@ -4,7 +4,9 @@ CELL_NUMBER = 20
 SCREEN_WIDTH = CELL_SIZE * CELL_NUMBER
 SCREEN_HEIGHT = CELL_SIZE * CELL_NUMBER
 
-# Color Palette
+GAME_SPEED = 150 * 3
+AUTO_RESTART_ON_DEATH = False
+
 COLORS = {
     "black": (0, 0, 0),
     "white": (255, 255, 255),
@@ -14,5 +16,4 @@ COLORS = {
     "food": (164, 0, 0),
 }
 
-# Game Speed (milliseconds between updates)
-GAME_SPEED = 150
+
